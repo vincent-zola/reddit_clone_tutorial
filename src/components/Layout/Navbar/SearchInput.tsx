@@ -12,11 +12,11 @@ import React from "react";
 
 // * ========== TS Types ==========
 
-// type SearchInputProps = {
-//   user:
-// };
-// const SearchInput: React.FC<SearchInputProps> 
-const SearchInput: React.FC = () => {
+type SearchInputProps = {
+  // user:
+};
+
+const SearchInput: React.FC<SearchInputProps> = () => {
   // * ========== HTML ==========
 
   return (
