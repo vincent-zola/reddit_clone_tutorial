@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     // wrap App in recoil library
     <RecoilRoot>
       {/* // set up the ChakraProvider at the root of your application. */}
-      {/* // ! Chakra throws a warning in the console, need to update Chakra in the future maybe */}
+      {/* // ! Chakra throws a warning in the console, need to update Chakra in the future */}
       <ChakraProvider theme={theme}>
         {/* wrapping our App in Layout so that the Navbar is on every page */}
         <Layout>
