@@ -1,13 +1,7 @@
 // * ========== Imports ==========
 
 import { SearchIcon } from "@chakra-ui/icons";
-import {
-  Flex,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import React from "react";
 
 // * ========== TS Types ==========
@@ -22,10 +16,13 @@ const SearchInput: React.FC<SearchInputProps> = () => {
   return (
     <Flex flexGrow={1} mr={2} align="center">
       <InputGroup>
-        <InputLeftElement
+        {/* <InputLeftElement
           pointerEvents="none"
-          // children={<SearchIcon color="gray.400" mb={1} />}
-        />
+          children={<SearchIcon color="gray.400" mb={1} />}
+        /> */}
+        <InputLeftElement pointerEvents="none">
+        <SearchIcon color="gray.400" mb={1} />
+        </InputLeftElement>
         <Input
           placeholder="Search Reddit"
           fontSize="10pt"
