@@ -7,6 +7,7 @@ import { auth } from "../../../../firebase/clientApp";
 import AuthModal from "../../../Modal/Auth/AuthModal";
 import AuthButtons from "./AuthButtons";
 import Icons from "./Icons";
+import UserMenu from "./UserMenu";
 
 // * ========== TS Types ==========
 
@@ -24,7 +25,7 @@ const RightContent: React.FC<RightContentProps> = ({ user }) => {
       <Flex justify="center" align="center">
         {/* if user logged in show: Logout, else: AuthButtons */}
         {user ? <Icons /> : <AuthButtons />}
-        {/* <Menu/> */}
+        <UserMenu user={user} />
       </Flex>
     </>
   );
