@@ -18,7 +18,7 @@ const SignUp: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
-
+  // will be displayed beneath input element
   const [error, setError] = useState("");
   // Extract variables from react-firebase-hook library
   const [createUserWithEmailAndPassword, user, loading, userError] =
