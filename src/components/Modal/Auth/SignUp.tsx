@@ -120,8 +120,8 @@ const SignUp: React.FC = () => {
         }}
         bg="gray.50"
       />
-      // * ===== Error display =====
-      
+      {/* // * ===== Error display ===== */}
+
       <Text textAlign="center" color="red" fontSize="10pt">
         {/* errors are stored in errors.ts */}
         {/* as keyof typeof = assign a type for TS */}
