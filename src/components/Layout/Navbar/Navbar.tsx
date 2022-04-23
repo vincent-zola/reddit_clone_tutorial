@@ -2,10 +2,18 @@
 
 import { Flex, Image } from "@chakra-ui/react";
 import React from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../../../firebase/clientApp";
 import RightContent from "./RightContent/RightContent";
 import SearchInput from "./SearchInput";
 
+// *========== Variables & Functions ==========
+
 const Navbar: React.FC = () => {
+  // The user data for firebase authentication is stored in firebaseLocalStorageDb in IndexedDB. After login to website, if you delete firebaseLocalStorageDb, the login user data for firebase authentication is all deleted so you need to log in website again.
+  // Retrieve and monitor the authentication state from Firebase.
+  const [user, loading, error] = useAuthState(auth);
+
   // * ========== HTML ==========
 
   return (
@@ -23,7 +31,7 @@ const Navbar: React.FC = () => {
       </Flex>
       {/* <Directory/> */}
       <SearchInput />
-      <RightContent />
+      <RightContent user={user} />
     </Flex>
   );
 };
