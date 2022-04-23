@@ -21,6 +21,7 @@ const SignUp: React.FC = () => {
   // will be displayed beneath input element
   const [error, setError] = useState("");
   // Extract variables from react-firebase-hook library
+  // loading: either true or false, we will use it for our button spinner
   const [createUserWithEmailAndPassword, user, loading, userError] =
     useCreateUserWithEmailAndPassword(auth);
 
