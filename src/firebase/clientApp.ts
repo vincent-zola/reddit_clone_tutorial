@@ -20,7 +20,7 @@ const firebaseConfig = {
 // check is a next-js thing, if getApps is already initialized than getApp() else initializeApp
 // After you initialize a Firebase App object in your code, you can add and start using Firebase services.
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-// initialize DataBase in our project
+// initialize DataBase in our project, we will import it to any file which will read, write to our db
 const firestore = getFirestore(app)
 // initialize Authentication in our project
 // this variable will be populated with info from the google acc. which logged in.

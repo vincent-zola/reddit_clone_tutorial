@@ -17,9 +17,12 @@ import {
   Flex,
   Icon,
 } from "@chakra-ui/react";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { BsFillEyeFill, BsFillPersonFill } from "react-icons/bs";
 import { HiLockClosed } from "react-icons/hi";
+import { auth, firestore } from "../../../firebase/clientApp";
 
 // * ========== TS Types ==========
 
@@ -35,12 +38,15 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
   open,
   handleClose,
 }) => {
+  const [user] = useAuthState(auth);
   // Name form Input
   const [communityName, setCommunityName] = useState("");
   // Name can be just max 21 chars
   const [charsRemaining, setCharsRemaining] = useState(21);
   //   for community selection
   const [communityType, setCommunityType] = useState("public");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   // Fn. handling name input and chars calculation
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     //   stop Fn if name exceeds 21
@@ -56,9 +62,52 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
     setCommunityType(event.target.name);
   };
 
+  // * ===== Create Communities =====
+  // communications with db are async operations
+  const handleCreateCommunity = async () => {
+    if(error) setError("")
+    // validate the community
+    // using RegExp .test() function to check for a pattern match
+    const format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+    if (format.test(communityName) || communityName.length < 3) {
+      setError(
+        "Community names must be between 3-21 characters, and can only contain letters, numbers, or underscores"
+      );
+      return;
+    }
+    setLoading(true);
+
+    try {
+      // create the community document in firestore
+      // Check that name is not taken
+      // doc() creates a reference to db, firestore declared in clientApp.ts, "communities" name of the collection in db, communityName is the ID of the Document, it can be used because it's unique in our case
+      const communityDocRef = doc(firestore, "communities", communityName);
+      // get the actual document from db
+      const communityDoc = await getDoc(communityDocRef);
+      if (communityDoc.exists()) {
+        throw new Error(`Sorry, r/${communityName} is taken, Try another.`);
+      }
+
+      // If valid name, create community
+      await setDoc(communityDocRef, {
+        // creatorId
+        creatorId: user?.uid,
+        // createdAt, serverTimestamp() is a firebase fn.
+        createdAd: serverTimestamp(),
+        // numberOfMembers,
+        numberOfMembers: 1,
+        // privacyType
+        privacyType: communityType,
+      });
+    } catch (error: any) {
+      console.log(`handleCreateCommunity error`, error);
+      setError(error.message);
+    }
+    setLoading(false);
+  };
+
   // * ========== HTML ==========
 
-  console.log(communityName);
   return (
     <>
       {/* make modal bigger by adding size="lg" */}
@@ -104,6 +153,11 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
                 color={charsRemaining === 0 ? "red" : "gray.500"}
               >
                 {charsRemaining} Characters remaining
+              </Text>
+              {/* //*===== Error message =====
+               */}
+              <Text fontSize="9pt" color="red" pt={1}>
+                {error}
               </Text>
               <Box mt={4} mb={4}>
                 <Text fontWeight={600} fontSize={15}>
@@ -173,7 +227,11 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
             >
               Cancel
             </Button>
-            <Button height="30px" onClick={() => {}}>
+            <Button
+              height="30px"
+              onClick={handleCreateCommunity}
+              isLoading={loading}
+            >
               Create Community
             </Button>
           </ModalFooter>
