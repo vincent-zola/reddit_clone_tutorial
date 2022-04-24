@@ -81,14 +81,15 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
       // create the community document in firestore
       // Check that name is not taken
       // doc() creates a reference to db, firestore declared in clientApp.ts, "communities" name of the collection in db, communityName is the ID of the Document, it can be used because it's unique in our case
+      // communityDocRef is basically a path 
       const communityDocRef = doc(firestore, "communities", communityName);
-      // get the actual document from db
+      // get the actual document from db, if it exists throw error
       const communityDoc = await getDoc(communityDocRef);
       if (communityDoc.exists()) {
         throw new Error(`Sorry, r/${communityName} is taken, Try another.`);
       }
 
-      // If valid name, create community
+      // If valid name, create community, use communityDocRef as path.
       await setDoc(communityDocRef, {
         // creatorId
         creatorId: user?.uid,
