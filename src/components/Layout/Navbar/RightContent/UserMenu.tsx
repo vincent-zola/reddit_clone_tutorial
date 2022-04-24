@@ -45,6 +45,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
       >
         <Flex align="center">
           <Flex align="center">
+            {/* //*===== user logged in display avatar and username =====
+             */}
             {user ? (
               <>
                 <Icon
@@ -73,12 +75,16 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 </Flex>
               </>
             ) : (
+              //*===== user logged out display generic avatar =====
               <Icon fontSize={24} color="gray.400" mr={1} as={VscAccount} />
             )}
           </Flex>
+          {/* Arrow down Icon */}
           <ChevronDownIcon />
         </Flex>
       </MenuButton>
+      {/* // * ===== user logged in display menu items =====
+       */}
       <MenuList>
         {user ? (
           <>
@@ -106,6 +112,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             </MenuItem>
           </>
         ) : (
+          //*===== user logged out display Log In / Sign Up Item =====
           <>
             <MenuItem
               onClick={() => setAuthModalState({ open: true, view: "login" })}
