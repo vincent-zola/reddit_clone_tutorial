@@ -1,12 +1,14 @@
 // * ========== Imports ==========
 
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../../atoms/authModalAtom";
-import { auth } from "../../../firebase/clientApp";
+import { auth, firestore } from "../../../firebase/clientApp";
 import { FIREBASE_ERRORS } from "../../../firebase/errors";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { User } from "firebase/auth";
+import { addDoc, collection } from "firebase/firestore";
 
 // *========== Variables & Functions ==========
 
@@ -22,10 +24,11 @@ const SignUp: React.FC = () => {
   const [error, setError] = useState("");
   // Extract variables from react-firebase-hook library
   // loading: either true or false, we will use it for our button spinner
-  const [createUserWithEmailAndPassword, user, loading, userError] =
+  const [createUserWithEmailAndPassword, userCred, loading, userError] =
     useCreateUserWithEmailAndPassword(auth);
 
-  //   Firebase sign up
+  // * Firebase sign up
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (error) setError("");
@@ -50,6 +53,24 @@ const SignUp: React.FC = () => {
       [event.target.name]: event.target.value,
     }));
   };
+
+  // *Push created user to db
+  // takes in User from auth
+  const createUserDocument = async (user: User) => {
+    // adding user data to firebase db, "users" is the collection and user will be the value of the collection
+    await addDoc(
+      collection(firestore, "users"),
+      // convert user to an JS object
+      // kind of cloning an object, so that you get a complete copy that is unique but has the same properties as the cloned object, changes it although a bit, so that firebase does not complain
+      JSON.parse(JSON.stringify(user))
+    );
+  };
+  // every time user changes push user to firebase db
+  useEffect(() => {
+    if (userCred) {
+      createUserDocument(userCred.user);
+    }
+  }, [userCred]);
 
   // * ========== HTML ==========
 

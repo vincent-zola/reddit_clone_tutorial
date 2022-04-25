@@ -17,7 +17,13 @@ import {
   Flex,
   Icon,
 } from "@chakra-ui/react";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  runTransaction,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { BsFillEyeFill, BsFillPersonFill } from "react-icons/bs";
@@ -65,7 +71,7 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
   // * ===== Create Communities =====
   // communications with db are async operations
   const handleCreateCommunity = async () => {
-    if(error) setError("")
+    if (error) setError("");
     // validate the community
     // using RegExp .test() function to check for a pattern match
     const format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
@@ -81,24 +87,38 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
       // create the community document in firestore
       // Check that name is not taken
       // doc() creates a reference to db, firestore declared in clientApp.ts, "communities" name of the collection in db, communityName is the ID of the Document, it can be used because it's unique in our case
-      // communityDocRef is basically a path 
+      // communityDocRef is basically a path
       const communityDocRef = doc(firestore, "communities", communityName);
-      // get the actual document from db, if it exists throw error
-      const communityDoc = await getDoc(communityDocRef);
-      if (communityDoc.exists()) {
-        throw new Error(`Sorry, r/${communityName} is taken, Try another.`);
-      }
+      // runTransaction: atomic operations, either all of the operations (transactions) succeed, or none of them are applied
+      await runTransaction(firestore, async (transaction) => {
+        // get the actual document from db, if it exists throw error
+        const communityDoc = await transaction.get(communityDocRef);
+        if (communityDoc.exists()) {
+          throw new Error(`Sorry, r/${communityName} is taken, Try another.`);
+        }
 
-      // If valid name, create community, use communityDocRef as path.
-      await setDoc(communityDocRef, {
-        // creatorId
-        creatorId: user?.uid,
-        // createdAt, serverTimestamp() is a firebase fn.
-        createdAd: serverTimestamp(),
-        // numberOfMembers,
-        numberOfMembers: 1,
-        // privacyType
-        privacyType: communityType,
+        // If valid name, create community, use communityDocRef as path.
+        transaction.set(communityDocRef, {
+          // creatorId
+          creatorId: user?.uid,
+          // createdAt, serverTimestamp() is a firebase fn.
+          createdAd: serverTimestamp(),
+          // numberOfMembers,
+          numberOfMembers: 1,
+          // privacyType
+          privacyType: communityType,
+        });
+        // create communitySnippet on user
+        transaction.set(
+          // specifies path, where the snipped should be written
+          // users: collection, ${user?.uid}: document, communitySnippets: subCollection, communityName: ID
+          doc(firestore, `users/${user?.uid}/communitySnippets`, communityName),
+          {
+            // stored data
+            communityId: communityName,
+            isModerator: true,
+          }
+        );
       });
     } catch (error: any) {
       console.log(`handleCreateCommunity error`, error);
