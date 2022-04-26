@@ -3,7 +3,7 @@
 import { Flex, Icon, MenuItem } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { GrAdd } from "react-icons/gr";
-import CreateCommunityModal from "../../../Modal/CreateCommunity/CreateCommunityModal";
+import CreateCommunityModal from "../../Modal/CreateCommunity/CreateCommunityModal";
 
 // * ========== TS Types ==========
 

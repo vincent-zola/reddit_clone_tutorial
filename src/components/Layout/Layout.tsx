@@ -2,7 +2,7 @@
 // * ========== Imports ==========
 // import ReactNode, so that children can be assign to a TS type
 import React, { ReactNode } from "react";
-import Navbar from "./Navbar/Navbar";
+import Navbar from "../Navbar/Navbar";
 
 // * ========== TS Types ==========
 
@@ -11,6 +11,8 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  
+  
   // * ========== HTML ==========
   return (
     <>

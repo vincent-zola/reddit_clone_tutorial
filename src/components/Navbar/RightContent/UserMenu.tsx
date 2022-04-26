@@ -18,9 +18,9 @@ import { IoSparkles } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineLogin } from "react-icons/md";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { auth } from "../../../../firebase/clientApp";
+import { auth } from "../../../firebase/clientApp";
 import { useSetRecoilState } from "recoil";
-import { authModalState } from "../../../../atoms/authModalAtom";
+import { authModalState } from "../../../atoms/authModalAtom";
 
 // * ========== TS Types ==========
 
