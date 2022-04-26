@@ -1,3 +1,5 @@
+// * ========== Imports ==========
+
 import { doc, getDoc } from "firebase/firestore";
 import { GetServerSidePropsContext } from "next";
 import React from "react";
@@ -8,13 +10,15 @@ import NotFound from "../../../components/Community/NotFound";
 import Header from "../../../components/Community/Header";
 import PageContent from "../../../components/Layout/PageContent";
 
+// * ========== TS Types ==========
+
 type CommunityPageProps = {
   communityData: Community;
 };
 
 const CommunityPage: React.FC<CommunityPageProps> = ({ communityData }) => {
   
-
+// * ========== HTML ==========
   if (!communityData) {
     return <NotFound />;
   }

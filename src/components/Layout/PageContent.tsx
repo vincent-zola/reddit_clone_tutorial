@@ -11,7 +11,7 @@ interface PageContentProps {
 }
 // children are elements inside the <PageContent></PageContent> element in index.tsx
 const PageContent: React.FC<PageContentProps> = ({ children }) => {
-  // * ===== InnerHTML =====
+  // * ========== HTML ==========
 
   return (
     <Flex justify="center" p="16px 0px" border="1px solid red">
