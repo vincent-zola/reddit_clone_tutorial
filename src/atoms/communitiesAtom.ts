@@ -15,7 +15,7 @@ export interface Community {
 }
 
 // interface representing the sniped in our firestore db
-interface CommunitySnippet {
+export interface CommunitySnippet {
   communityId: string;
   // optional because will be there if we created the community ourselves
   isModerator?: boolean;

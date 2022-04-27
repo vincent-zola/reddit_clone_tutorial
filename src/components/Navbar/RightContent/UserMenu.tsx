@@ -19,8 +19,9 @@ import { CgProfile } from "react-icons/cg";
 import { MdOutlineLogin } from "react-icons/md";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { auth } from "../../../firebase/clientApp";
-import { useSetRecoilState } from "recoil";
+import { useResetRecoilState, useSetRecoilState } from "recoil";
 import { authModalState } from "../../../atoms/authModalAtom";
+import { communityState } from "../../../atoms/communitiesAtom";
 
 // * ========== TS Types ==========
 
@@ -30,8 +31,17 @@ type UserMenuProps = {
 // *========== Variables & Functions ==========
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
+  //* this will be used to delete all atom states when user logs out
+  const resetCommunityState = useResetRecoilState(communityState);
   //   contains atom: default open: false, view: "login"
   const setAuthModalState = useSetRecoilState(authModalState);
+
+  // *reset all atom states when user logs out
+  const logout = async () => {
+    await signOut(auth);
+    //  clear community state
+    resetCommunityState();
+  };
 
   // * ========== HTML ==========
 
@@ -100,7 +110,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             </MenuItem>
             <MenuDivider />
             <MenuItem
-              onClick={() => signOut(auth)}
+              onClick={logout}
               fontSize="10pt"
               fontWeight={700}
               _hover={{ bg: "blue.500", color: "white" }}

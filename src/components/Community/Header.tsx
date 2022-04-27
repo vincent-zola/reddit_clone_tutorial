@@ -16,7 +16,7 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ communityData }) => {
   // variables and fn. from our useCommunityData.tsx
-  const { communityStateValue, onJoinOrLeaveCommunity } = useCommunityData();
+  const { communityStateValue, onJoinOrLeaveCommunity, loading } = useCommunityData();
   //* check if sniped from user contains the community name 
   // "!!" double bang operator which will convert the result from undefined or community name to a boolean
   const isJoined = !!communityStateValue.mySnippets.find(
@@ -58,6 +58,7 @@ const Header: React.FC<HeaderProps> = ({ communityData }) => {
               height="30px"
               pr={6}
               pl={6}
+              isLoading={loading}
               onClick={() => onJoinOrLeaveCommunity(communityData, isJoined)}
             >
               {isJoined ? "Joined" : "Join"}
