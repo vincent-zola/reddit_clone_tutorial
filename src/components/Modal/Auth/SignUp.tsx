@@ -12,6 +12,7 @@ import { addDoc, collection } from "firebase/firestore";
 
 // *========== Variables & Functions ==========
 
+
 const SignUp: React.FC = () => {
   //   contains atom: open: false, view: "login"
   const setAuthModalState = useSetRecoilState(authModalState);
@@ -26,6 +27,7 @@ const SignUp: React.FC = () => {
   // loading: either true or false, we will use it for our button spinner
   const [createUserWithEmailAndPassword, userCred, loading, userError] =
     useCreateUserWithEmailAndPassword(auth);
+
 
   // * Firebase sign up
 

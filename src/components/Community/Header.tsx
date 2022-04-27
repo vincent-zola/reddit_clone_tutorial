@@ -1,20 +1,34 @@
+// * ========== Imports ==========
+
 import { Box, Button, Flex, Icon, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { FaReddit } from "react-icons/fa";
 import { Community } from "../../atoms/communitiesAtom";
+import useCommunityData from "../../hooks/useCommunityData";
+
+// * ========== TS Types ==========
 
 type HeaderProps = {
   communityData: Community;
 };
 
+// *========== Variables & Functions ==========
+
 const Header: React.FC<HeaderProps> = ({ communityData }) => {
-  // read from our communitySnippets
-  const isJoined = false;
+  // variables and fn. from our useCommunityData.tsx
+  const { communityStateValue, onJoinOrLeaveCommunity } = useCommunityData();
+  //* check if sniped from user contains the community name 
+  // "!!" double bang operator which will convert the result from undefined or community name to a boolean
+  const isJoined = !!communityStateValue.mySnippets.find(
+    (item) => item.communityId === communityData.id
+  );
+  // * ========== HTML ==========
+
   return (
     <Flex direction="column" width="100%" height="146px">
       <Box height="50%" bg="blue.400" />
       <Flex justify="center" bg="white" flexGrow={1}>
-        <Flex width="95%" maxWidth="860px" >
+        <Flex width="95%" maxWidth="860px">
           {communityData.imageURL ? (
             <Image />
           ) : (
@@ -37,12 +51,14 @@ const Header: React.FC<HeaderProps> = ({ communityData }) => {
                 r/{communityData.id}
               </Text>
             </Flex>
+            {/* //* Join/Joined button
+             */}
             <Button
               variant={isJoined ? "outline" : "solid"}
               height="30px"
               pr={6}
               pl={6}
-              onClick={() => {}}
+              onClick={() => onJoinOrLeaveCommunity(communityData, isJoined)}
             >
               {isJoined ? "Joined" : "Join"}
             </Button>

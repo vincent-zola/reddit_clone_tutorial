@@ -17,8 +17,7 @@ type CommunityPageProps = {
 };
 
 const CommunityPage: React.FC<CommunityPageProps> = ({ communityData }) => {
-  
-// * ========== HTML ==========
+  // * ========== HTML ==========
   if (!communityData) {
     return <NotFound />;
   }
@@ -26,7 +25,7 @@ const CommunityPage: React.FC<CommunityPageProps> = ({ communityData }) => {
   return (
     <>
       <Header communityData={communityData} />
-      
+
       <PageContent>
         <>
           <div>LHS</div>
@@ -55,15 +54,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const communityDoc = await getDoc(communityDocRef);
     return {
       props: {
-        // .exists() fb fn. check if community exists
+        // .exists() firebase fn. check if community exists
         communityData: communityDoc.exists()
           ? JSON.parse(
               // .data() helps us extract the data form the firestore obj.
-              // safeJsonStingify() helps us to convert the Timestamp inside the firestore obj.
-              // ! without library
+              // JSON.stringify() helps us to convert the Timestamp inside the firestore obj.
+              // .id: firebase fn. which grabs the name of the document, in our case community name
               JSON.stringify({ id: communityDoc.id, ...communityDoc.data() })
-              // ! with library
-              // safeJsonStringify({ id: communityDoc.id, ...communityDoc.data() })
             )
           : "",
       },
