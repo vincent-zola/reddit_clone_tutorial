@@ -12,7 +12,7 @@ import { auth, firestore } from "../firebase/clientApp";
 const useCommunityData = () => {
   const [user] = useAuthState(auth);
   console.log(user?.uid);
-  
+
   //   contains atom: default: mySnippets: []
   const [communityStateValue, setCommunityStateValue] =
     useRecoilState(communityState);
@@ -40,7 +40,6 @@ const useCommunityData = () => {
     // get the users snippets
     // path to the snippets
     const snippetDocs = await getDocs(
-        // ! how do we get the snippets if the uid and the document id are different?
       collection(firestore, `users/${user?.uid}/communitySnippets`)
     );
     try {

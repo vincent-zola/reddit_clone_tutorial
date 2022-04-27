@@ -8,7 +8,7 @@ import { auth, firestore } from "../../../firebase/clientApp";
 import { FIREBASE_ERRORS } from "../../../firebase/errors";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { User } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 // *========== Variables & Functions ==========
 
@@ -59,9 +59,10 @@ const SignUp: React.FC = () => {
   // *Push created user to db
   // takes in User from auth
   const createUserDocument = async (user: User) => {
-    // adding user data to firebase db, "users" is the collection and user will be the value of the collection
-    await addDoc(
-      collection(firestore, "users"),
+    // adding user data to firebase db, "users" is the collection and user.uid will be the name of the document in the collection
+    await setDoc(
+      // give setDoc() the path
+      doc(firestore, "users", user.uid),
       // convert user to an JS object
       // kind of cloning an object, so that you get a complete copy that is unique but has the same properties as the cloned object, changes it although a bit, so that firebase does not complain
       JSON.parse(JSON.stringify(user))
