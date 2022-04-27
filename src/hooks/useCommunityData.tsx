@@ -78,6 +78,7 @@ const useCommunityData = () => {
   // * Join Community
 
   const joinCommunity = async (communityData: Community) => {
+    setLoading(true);
     //   batch write
     //   creating a new community snippet
     try {
@@ -118,12 +119,29 @@ const useCommunityData = () => {
     setLoading(false);
   };
 
+//   ! where does the communityId come from????
   // * Leave Community
   // communityId: is the name of the community
-  const leaveCommunity = (communityId: string) => {
+  const leaveCommunity = async (communityId: string) => {
     //   batch write
     //   deleting a community snippet from user
-    // updating the numberOfMembers (-1)
+    try {
+      const batch = writeBatch(firestore);
+      // declare path and delete snippet from the user
+      batch.delete(
+        doc(firestore, `users/${user?.uid}/communitySnippets`, communityId)
+      );
+      // updating the numberOfMembers (-1)
+      batch.update(doc(firestore, "communities", communityId), {
+        // numberOfMembers declared in communitiesAtom.ts
+        numberOfMembers: increment(-1),
+      });
+      // execute all batch fn. from above
+      await batch.commit();
+    } catch (error: any) {
+      console.log("leaveCommunity error", error);
+      setError(error.message);
+    }
     // update recoil state = communityState.mySnippets
   };
 
