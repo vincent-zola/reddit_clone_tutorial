@@ -9,6 +9,7 @@ import safeJsonStringify from "safe-json-stringify";
 import NotFound from "../../../components/Community/NotFound";
 import Header from "../../../components/Community/Header";
 import PageContent from "../../../components/Layout/PageContent";
+import CreatePostLink from "../../../components/Community/CreatePostLink";
 
 // * ========== TS Types ==========
 
@@ -28,7 +29,7 @@ const CommunityPage: React.FC<CommunityPageProps> = ({ communityData }) => {
 
       <PageContent>
         <>
-          <div>LHS</div>
+          <CreatePostLink/>
         </>
         <>
           <div>RHS</div>
