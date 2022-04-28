@@ -28,7 +28,7 @@ const useCommunityData = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // * decide to join or leave community
+  // * decide to join or leave community, attached to button from Header.tsx
 
   const onJoinOrLeaveCommunity = (
     // communityData: data from firestore db about the community itself
@@ -119,10 +119,11 @@ const useCommunityData = () => {
     setLoading(false);
   };
 
-//   ! where does the communityId come from????
+  //   ! where does the communityId come from????
   // * Leave Community
   // communityId: is the name of the community
   const leaveCommunity = async (communityId: string) => {
+    setLoading(true);
     //   batch write
     //   deleting a community snippet from user
     try {
@@ -138,11 +139,18 @@ const useCommunityData = () => {
       });
       // execute all batch fn. from above
       await batch.commit();
+      // update recoil state = communityState.mySnippets
+      setCommunityStateValue((prev) => ({
+        ...prev,
+        mySnippets: prev.mySnippets.filter(
+          (item) => item.communityId !== communityId
+        ),
+      }));
     } catch (error: any) {
       console.log("leaveCommunity error", error);
       setError(error.message);
     }
-    // update recoil state = communityState.mySnippets
+    setLoading(false);
   };
 
   return {
