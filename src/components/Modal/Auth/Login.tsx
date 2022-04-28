@@ -17,6 +17,7 @@ type LoginProps = {};
 const Login: React.FC<LoginProps> = () => {
   //   contains atom: open: false, view: "login"
   const setAuthModalState = useSetRecoilState(authModalState);
+  
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",

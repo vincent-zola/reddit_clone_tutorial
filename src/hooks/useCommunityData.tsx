@@ -9,7 +9,8 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { authModalState } from "../atoms/authModalAtom";
 import {
   Community,
   CommunitySnippet,
@@ -25,6 +26,7 @@ const useCommunityData = () => {
   //   contains atom: default: mySnippets: [] will be populated with snippets from user
   const [communityStateValue, setCommunityStateValue] =
     useRecoilState(communityState);
+  const setAuthModalState = useSetRecoilState(authModalState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -35,13 +37,18 @@ const useCommunityData = () => {
     communityData: Community,
     isJoined: boolean
   ) => {
+    // if user not signedIn => open auth modal
+    if (!user) {
+      // open modal
+      setAuthModalState({ open: true, view: "login" });
+      return;
+    }
     //   is the user signed in?
     if (isJoined) {
       leaveCommunity(communityData.id);
       return;
     }
     joinCommunity(communityData);
-    // if not => open auth modal
   };
 
   //* get user snippet from firestore db
@@ -119,7 +126,6 @@ const useCommunityData = () => {
     setLoading(false);
   };
 
-  //   ! where does the communityId come from????
   // * Leave Community
   // communityId: is the name of the community
   const leaveCommunity = async (communityId: string) => {
