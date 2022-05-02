@@ -1,6 +1,6 @@
 // * ========== Imports ==========
 
-import { Flex, Icon } from "@chakra-ui/react";
+import { Alert, AlertIcon, Flex, Icon, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { BiPoll } from "react-icons/bi";
 import { BsLink45Deg, BsMic } from "react-icons/bs";
@@ -10,10 +10,23 @@ import TabItem from "./TabItem";
 import TextInputs from "./PostForm/TextInputs";
 import ImageUpload from "./PostForm/ImageUpload";
 import { Post } from "../../atoms/postsAtom";
+import { User } from "firebase/auth";
+import { useRouter } from "next/router";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { firestore, storage } from "../../firebase/clientApp";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
 // * ========== TS Types ==========
 
-type NewPostFormProps = {};
+type NewPostFormProps = {
+  user: User;
+};
 
 export type TabItem = {
   title: string;
@@ -46,7 +59,8 @@ const formTabs: TabItem[] = [
   },
 ];
 
-const NewPostForm: React.FC<NewPostFormProps> = () => {
+const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
+  const router = useRouter();
   // we use it to visually highlight the formTabs
   const [selectedTab, setSelectedTab] = useState(formTabs[0].title);
   const [textInputs, setTextInputs] = useState({
@@ -55,16 +69,50 @@ const NewPostForm: React.FC<NewPostFormProps> = () => {
   });
   const [selectedFile, setSelectedFile] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   // *store post in db
   const handleCreatePost = async () => {
+    const { communityId } = router.query;
     // create new post obj => type Post
-    const newPost: Post = {};
+    const newPost: Post = {
+      communityId: communityId as string,
+      creatorId: user?.uid,
+      // the bing operator tells TS that there will be for sure a value
+      creatorDisplayName: user.email!.split("@")[0],
+      title: textInputs.title,
+      body: textInputs.body,
+      numberOfComments: 0,
+      voteStatus: 0,
+      createdAt: serverTimestamp() as Timestamp,
+    };
+
     // store the post in db
-    // check for selectedFile
-    // store in storage => getDownloadURL (return imageURL)
-    // update post doc by adding imageURL
-    // redirect the user back to the communityPage using the router
+    setLoading(true);
+    try {
+      const postDocRef = await addDoc(collection(firestore, "posts"), newPost);
+      // check for selectedFile
+      if (selectedFile) {
+        // store in storage => getDownloadURL (return imageURL)
+        const imageRef = ref(storage, `posts/${postDocRef.id}/image`);
+        // imageRef: path, selectedFile: what we want to upload, data_url: format
+        await uploadString(imageRef, selectedFile, "data_url");
+        // create img url, so that we can view the img in the browser
+        const downloadURL = await getDownloadURL(imageRef);
+        // update post doc by adding imageURL
+        await updateDoc(postDocRef, {
+          imageURL: downloadURL,
+        });
+      }
+      // redirect the user back to the communityPage using the router
+    router.back();
+    } catch (error: any) {
+      console.log("handleCreatePost", error.message);
+      setError(true);
+    }
+    setLoading(false);
+
+    
   };
 
   // * image upload Fn.
@@ -130,6 +178,12 @@ const NewPostForm: React.FC<NewPostFormProps> = () => {
           />
         )}
       </Flex>
+      {error && (
+        <Alert status="error">
+          <AlertIcon />
+          <Text mr={2}>Error creating post</Text>
+        </Alert>
+      )}
     </Flex>
   );
 };
